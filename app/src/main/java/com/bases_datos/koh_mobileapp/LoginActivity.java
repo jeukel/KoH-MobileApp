@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -27,8 +28,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * A login screen that offers login via email/password.
@@ -42,6 +58,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
+    /*private static final String[] CREDENTIALS = new String[]{
+            KoHemail:KoHpassword
+    };*/
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -53,16 +72,49 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
+    //***********************************************************************************//
+
+    /*
+     * JSON Parser.
+     */
+    //TODO Adapt.
+    /*
+    public ArrayList<MyItem> findAllItems() {
+
+        JSONObject serviceResult = WebServiceUtil.requestWebService("http://172.19.127.63/index.php");
+
+        ArrayList<MyItem> foundItems = new ArrayList<MyItem>(20);
+
+        try {
+            JSONArray items = serviceResult.getJSONArray("items");
+
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject obj = items.getJSONObject(i);
+                foundItems.add(
+                        //new ClipData.Item(obj.getInt("id"), obj.getString("name"),
+                        //                  obj.getBoolean("active")));
+            }
+
+        } catch (JSONException e) {
+            // handle exception
+        }
+
+        return foundItems;
+    }
+    */
+
+    //***********************************************************************************//
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.KoHemail);
         populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordView = (EditText) findViewById(R.id.KoHpassword);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -84,7 +136,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        findViewById(R.id.button).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.register_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
@@ -151,6 +203,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
+
             mAuthTask.execute((Void) null);
         }
     }
@@ -227,7 +280,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             cursor.moveToNext();
         }
 
-        addEmailsToAutoComplete(emails);
+        //addEmailsToAutoComplete(emails);
     }
 
     @Override
@@ -271,10 +324,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         @Override
         protected void onPostExecute(List<String> emailAddressCollection) {
-            addEmailsToAutoComplete(emailAddressCollection);
+            //addEmailsToAutoComplete(emailAddressCollection);
         }
     }
 
+    /*
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
@@ -283,6 +337,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mEmailView.setAdapter(adapter);
     }
+    */
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -292,6 +347,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         private final String mEmail;
         private final String mPassword;
+        private final String SERVER_ADDRESS = "http://172.19.127.63/index.php";
+        private final int CONNECTION_TIMEOUT = 1000 * 15;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -302,12 +359,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
+            // Simulate network access.
             try {
-                // Simulate network access.
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                return false;
+                e.printStackTrace();
             }
+
+            //ServerConnection con = new ServerConnection();
+            //con.requestWebService();
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
@@ -317,8 +377,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
             }
 
-            // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override
@@ -327,6 +386,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
+                //TODO INSTANCE MAPS ACTIVITY.
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -339,6 +399,84 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    public class ServerConnection {
+        /**
+         * required in order to prevent issues in earlier Android version.
+         */
+        private void disableConnectionReuseIfNecessary() {
+            // see HttpURLConnection API doc
+            if (Integer.parseInt(Build.VERSION.SDK)
+                    < Build.VERSION_CODES.FROYO) {
+                System.setProperty("http.keepAlive", "false");
+            }
+        }
+
+        private String getResponseText(InputStream inStream) {
+            // very nice trick from
+            // http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
+            return new Scanner(inStream).useDelimiter("\\A").next();
+        }
+
+        /*
+         * Request for RestFul Web Service
+         */
+        public JSONObject requestWebService() {
+            disableConnectionReuseIfNecessary();
+
+            HttpURLConnection urlConnection = null;
+            try {
+                // create connection
+                //URL urlToRequest = new URL(SERVER_ADDRESS);
+                //urlConnection = (HttpURLConnection) urlToRequest.openConnection();
+
+                //urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
+                //urlConnection.setReadTimeout(DATARETRIEVAL_TIMEOUT);
+
+                // handle issues
+                int statusCode = urlConnection.getResponseCode();
+                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+
+                    // handle unauthorized (if service requires user login)
+                } else if (statusCode != HttpURLConnection.HTTP_OK) {
+                    // handle any other errors, like 404, 500,..
+                }
+
+                // create JSON object from content
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                return new JSONObject(getResponseText(in));
+
+            } catch (MalformedURLException | SocketTimeoutException e) {
+                e.printStackTrace();
+                // URL is invalid
+            } catch (IOException | JSONException e) {
+                // could not read response body
+                // (could not create input stream)
+                e.printStackTrace();
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+
+            return null;
+        }
+/*
+        protected void loginPOST() throws IOException{
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            try {
+                urlConnection.setDoOutput(true);
+                urlConnection.setChunkedStreamingMode(0);
+
+                BufferedOutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+                writeStream(out);
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                readStream(in);
+            }finally {
+                    urlConnection.disconnect();
+            }
+        }*/
     }
 }
 
