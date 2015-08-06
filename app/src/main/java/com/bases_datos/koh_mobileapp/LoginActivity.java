@@ -34,9 +34,11 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -347,8 +349,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         private final String mEmail;
         private final String mPassword;
-        private final String SERVER_ADDRESS = "http://172.19.127.63/index.php";
-        private final int CONNECTION_TIMEOUT = 1000 * 15;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -366,9 +366,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 e.printStackTrace();
             }
 
-            //ServerConnection con = new ServerConnection();
-            //con.requestWebService();
+            boolean status = false;
+            ServerConnection con = new ServerConnection();
+            if(con.requestWebService(mEmail, mPassword) != null){
+                return true;
+            }
 
+            /*
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mEmail)) {
@@ -376,6 +380,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     return pieces[1].equals(mPassword);
                 }
             }
+            */
 
             return false;
         }
@@ -422,25 +427,41 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         /*
          * Request for RestFul Web Service
          */
-        public JSONObject requestWebService() {
+        public JSONObject requestWebService(String Wemail, String Wpassword) {
             disableConnectionReuseIfNecessary();
+            final String SERVER_ADDRESS = "http://172.19.127.63/index.php";
+            final int CONNECTION_TIMEOUT = 1000 * 15;
+            final int DATARETRIEVAL_TIMEOUT = 1000 * 15;
 
             HttpURLConnection urlConnection = null;
             try {
                 // create connection
-                //URL urlToRequest = new URL(SERVER_ADDRESS);
-                //urlConnection = (HttpURLConnection) urlToRequest.openConnection();
+                URL urlToRequest = new URL(SERVER_ADDRESS);
+                urlConnection = (HttpURLConnection) urlToRequest.openConnection();
+                urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
+                urlConnection.setReadTimeout(DATARETRIEVAL_TIMEOUT);
 
-                //urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
-                //urlConnection.setReadTimeout(DATARETRIEVAL_TIMEOUT);
+                urlConnection.setDoOutput(true);
+                urlConnection.setChunkedStreamingMode(0);
+
+                OutputStreamWriter d = new OutputStreamWriter(urlConnection.getOutputStream());
+                JSONObject cred = new JSONObject();
+                JSONObject auth=new JSONObject();
+                cred.put("username",Wemail);
+                cred.put("password", Wpassword);
+                auth.put("passwordCredentials", cred);
+
+                //F*CKING NEEDED LINE!!!!!!
+                d.write(auth.toString());
 
                 // handle issues
                 int statusCode = urlConnection.getResponseCode();
                 if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-
                     // handle unauthorized (if service requires user login)
+                    // DO Nothing.
                 } else if (statusCode != HttpURLConnection.HTTP_OK) {
                     // handle any other errors, like 404, 500,..
+                    return null;
                 }
 
                 // create JSON object from content
