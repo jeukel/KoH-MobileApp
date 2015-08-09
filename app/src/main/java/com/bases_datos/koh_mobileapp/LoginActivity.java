@@ -144,15 +144,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
-<<<<<<< HEAD
         findViewById(R.id.button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, MapsActivity.class));
             }
         });
-=======
->>>>>>> 52bacdb264e9f023d683e6205f3a62aad1e61aa7
+
     }
 
     private void populateAutoComplete() {

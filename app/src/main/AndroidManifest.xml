@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-<<<<<<< HEAD
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -27,8 +27,6 @@
         android:glEsVersion="0x00020000"
         android:required="true"/>
 
-=======
->>>>>>> 52bacdb264e9f023d683e6205f3a62aad1e61aa7
 
     <application
         android:allowBackup="true"
@@ -57,7 +55,6 @@
             android:name=".Fight"
             android:label="@string/title_activity_fight" >
         </activity>
-<<<<<<< HEAD
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -70,8 +67,7 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
         </activity>
-=======
->>>>>>> 52bacdb264e9f023d683e6205f3a62aad1e61aa7
+
     </application>
 
 </manifest>
