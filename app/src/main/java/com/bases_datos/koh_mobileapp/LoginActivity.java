@@ -51,6 +51,7 @@ import java.util.Scanner;
 /**
  * A login screen that offers login via email/password.
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     /**
@@ -144,13 +145,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
-        findViewById(R.id.button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, MapsActivity.class));
-            }
-        });
-
     }
 
     private void populateAutoComplete() {

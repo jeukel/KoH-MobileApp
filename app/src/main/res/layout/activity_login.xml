@@ -46,25 +46,16 @@
                 android:text="Register"
                 android:textStyle="bold"
                 android:layout_gravity="center_horizontal"/>
-
-
-            <Button
+<!--
+            <ImageButton
+                android:id="@+id/logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="map"
-                android:id="@+id/button"
-                android:layout_gravity="center_horizontal" />
-            <!--
-                        <ImageButton
-                            android:id="@+id/logo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/game"
-                            android:layout_gravity="center"
-                            android:onClick="registerClick"
-                            />
-            -->
-
+                android:background="@drawable/game"
+                android:layout_gravity="center"
+                android:onClick="registerClick"
+                />
+-->
         </LinearLayout>
     </ScrollView>
 
