@@ -15,5 +15,8 @@
 
     <string name="action_example">Example action</string>
     <string name="title_activity_fight">Fight</string>
+<<<<<<< HEAD
     <string name="title_activity_maps">Maps</string>
+=======
+>>>>>>> 52bacdb264e9f023d683e6205f3a62aad1e61aa7
 </resources>

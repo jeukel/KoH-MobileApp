@@ -6,6 +6,7 @@
     <statePointEntry>
       <state      
         class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+<<<<<<< HEAD
         className = "com.bases_datos.koh_mobileapp.LoginActivity"/>
       <point      
         x = "228"      
@@ -34,14 +35,27 @@
       <point      
         x = "152"      
         y = "1532"/>
+=======
+        className = "com.bases_datos.koh_mobileapp.RegisterActivity"/>
+      <point      
+        x = "1784"      
+        y = "56"/>
+>>>>>>> 52bacdb264e9f023d683e6205f3a62aad1e61aa7
     </statePointEntry>
     <statePointEntry>
       <state      
         class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+<<<<<<< HEAD
         className = "com.bases_datos.koh_mobileapp.RegisterActivity"/>
       <point      
         x = "1432"      
         y = "-172"/>
+=======
+        className = "com.bases_datos.koh_mobileapp.LoginActivity"/>
+      <point      
+        x = "192"      
+        y = "56"/>
+>>>>>>> 52bacdb264e9f023d683e6205f3a62aad1e61aa7
     </statePointEntry>
   </locations>
 </navigationModel>
