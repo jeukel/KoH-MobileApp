@@ -45,7 +45,16 @@
                 android:layout_marginTop="16dp"
                 android:text="Register"
                 android:textStyle="bold"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"/>
+
+            <ImageButton
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/game"
+                android:layout_gravity="center"
+                android:onClick="registerClick"
+                />
 
         </LinearLayout>
     </ScrollView>
