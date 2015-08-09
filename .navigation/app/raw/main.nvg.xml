@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigationModel
+  ns = "http://schemas.android.com?import=com.android.tools.idea.editors.navigation.model.*">
+  <locations  
+    class = "java.util.ArrayList">
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.bases_datos.koh_mobileapp.LoginActivity"/>
+      <point      
+        x = "228"      
+        y = "-24"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.bases_datos.koh_mobileapp.Fight"/>
+      <point      
+        x = "2320"      
+        y = "-72"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.bases_datos.koh_mobileapp.MapsActivity"/>
+      <point      
+        x = "1612"      
+        y = "1584"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.bases_datos.koh_mobileapp.Zones"/>
+      <point      
+        x = "152"      
+        y = "1532"/>
+    </statePointEntry>
+    <statePointEntry>
+      <state      
+        class = "com.android.tools.idea.editors.navigation.model.ActivityState"      
+        className = "com.bases_datos.koh_mobileapp.RegisterActivity"/>
+      <point      
+        x = "1432"      
+        y = "-172"/>
+    </statePointEntry>
+  </locations>
+</navigationModel>
