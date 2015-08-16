@@ -1,6 +1,9 @@
 package com.bases_datos.koh_mobileapp;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.CountDownTimer;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.app.Activity;
@@ -13,10 +16,14 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 //extends FragmentActivity para versiones anteriores de android
 public class MapsActivity extends Activity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    boolean isOn = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +31,42 @@ public class MapsActivity extends Activity {
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
         drawPoligono(Posiciones.POLIGONO);
+        while(isOn){
+            new CountDownTimer(15000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    //Do Nothing
+                }
+
+                public void onFinish() {
+                    // On countdown finish it uploads the coords
+                    Location loc = mMap.getMyLocation();
+                    double X = loc.getLatitude();
+                    double Y = loc.getLongitude();
+                    LoginActivity lg = (LoginActivity) getApplicationContext();
+                    String email = lg.getUsr();
+                    ServerConnection conn = new ServerConnection();
+                    String query = "un=" + email + "&x=" + X + "&y=" + Y;
+                    JSONObject obj = conn.requestWebService(3, query);
+                    if( obj != null){
+                        //TODO WHAT ACTIVITY
+
+                        try {
+                            if(obj.getJSONObject("message").getString("m") == "0"){
+                                startActivity(new Intent(MapsActivity.this, Attackin.class));
+                            }else{
+                                startActivity(new Intent(MapsActivity.this, BeingAttacked.class));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }
+            }.start();
+        }
+
     }
 
     //Con esto podemos dibujar sobre el mapa
@@ -80,7 +123,7 @@ public class MapsActivity extends Activity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 }
 

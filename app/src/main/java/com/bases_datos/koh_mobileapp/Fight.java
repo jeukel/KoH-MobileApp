@@ -52,7 +52,16 @@ public class Fight extends AppCompatActivity implements MediaPlayer.OnCompletion
             }
 
             public void onFinish() {
+                //get email.
+                LoginActivity lg = (LoginActivity) getApplicationContext();
+                String email = lg.getUsr();
+
+                // On finish countdown it uploads the taps.
                 text1.setText("done!");
+                ServerConnection conn = new ServerConnection();
+                String query = "un=" + email + "&" + "tps=" + taps;
+                conn.requestWebService(4, query);
+
             }
         }.start();
 
@@ -61,8 +70,6 @@ public class Fight extends AppCompatActivity implements MediaPlayer.OnCompletion
             AssetFileDescriptor descriptor = manager.openFd("lase2.ogg");
             player.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
         }catch(Exception e){};
-
-
     }
 
     @Override
@@ -103,83 +110,6 @@ public class Fight extends AppCompatActivity implements MediaPlayer.OnCompletion
     @Override
     public void onCompletion(MediaPlayer mp) {
         player.stop();
-    }
-}
-
-
-class uploadPushes {
-    /**
-     * required in order to prevent issues in earlier Android version.
-     */
-    private void disableConnectionReuseIfNecessary() {
-        // see HttpURLConnection API doc
-        if (Integer.parseInt(Build.VERSION.SDK)
-                < Build.VERSION_CODES.FROYO) {
-            System.setProperty("http.keepAlive", "false");
-        }
-    }
-
-    private String getResponseText(InputStream inStream) {
-        // very nice trick from
-        // http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
-        return new Scanner(inStream).useDelimiter("\\A").next();
-    }
-
-    /*
-     * Request for RestFul Web Service
-     */
-    public JSONObject requestWebService(int taps) {
-        disableConnectionReuseIfNecessary();
-        final String SERVER_ADDRESS = "http://172.19.127.63/index.php";
-        final int CONNECTION_TIMEOUT = 1000 * 15;
-        final int DATARETRIEVAL_TIMEOUT = 1000 * 15;
-
-        HttpURLConnection urlConnection = null;
-        try {
-            // create connection
-            URL urlToRequest = new URL(SERVER_ADDRESS);
-            urlConnection = (HttpURLConnection) urlToRequest.openConnection();
-            urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
-            urlConnection.setReadTimeout(DATARETRIEVAL_TIMEOUT);
-
-            urlConnection.setDoOutput(true);
-            urlConnection.setChunkedStreamingMode(0);
-
-            OutputStreamWriter d = new OutputStreamWriter(urlConnection.getOutputStream());
-            JSONObject qty = new JSONObject();
-            qty.put("taps",taps);
-
-            //F*CKING NEEDED LINE!!!!!!
-            d.write(qty.toString());
-
-            // handle issues
-            int statusCode = urlConnection.getResponseCode();
-            if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                // handle unauthorized (if service requires user login)
-                // DO Nothing.
-            } else if (statusCode != HttpURLConnection.HTTP_OK) {
-                // handle any other errors, like 404, 500,..
-                return null;
-            }
-
-            // create JSON object from content
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            return new JSONObject(getResponseText(in));
-
-        } catch (MalformedURLException | SocketTimeoutException e) {
-            e.printStackTrace();
-            // URL is invalid
-        } catch (IOException | JSONException e) {
-            // could not read response body
-            // (could not create input stream)
-            e.printStackTrace();
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-        }
-
-        return null;
     }
 }
 

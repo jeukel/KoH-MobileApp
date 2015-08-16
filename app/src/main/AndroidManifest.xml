@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,15 +17,16 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!--Se agregan permisos para actualizar la posicion al moverse  -->
-    <permission android:name="com.bases_datos.android.koh_mobileapp.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature"/>
-    <uses-permission android:name="com.bases_datos.android.koh_mobileapp.permission.MAPS_RECEIVE"/>
+    <!-- Se agregan permisos para actualizar la posicion al moverse -->
+    <permission
+        android:name="com.bases_datos.android.koh_mobileapp.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.bases_datos.android.koh_mobileapp.permission.MAPS_RECEIVE" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true"/>
-
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -48,10 +48,6 @@
             android:label="@string/title_activity_register" >
         </activity>
         <activity
-            android:name=".Zones"
-            android:label="@string/title_activity_zones" >
-        </activity>
-        <activity
             android:name=".Fight"
             android:label="@string/title_activity_fight" >
         </activity>
@@ -67,7 +63,10 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
         </activity>
-
+        <activity
+            android:name=".BeingAttacked"
+            android:label="@string/title_activity_being_attacked" >
+        </activity>
     </application>
 
 </manifest>

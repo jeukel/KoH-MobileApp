@@ -54,9 +54,13 @@ import java.util.Scanner;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
+    //Simulation of cookies
+    boolean loggedin;
+    String usr;
+
     /**
      * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
+     * TODO: remove after connecting to a real authentication system or not.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
@@ -74,39 +78,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-
-    //***********************************************************************************//
-
-    /*
-     * JSON Parser.
-     */
-    //TODO Adapt.
-    /*
-    public ArrayList<MyItem> findAllItems() {
-
-        JSONObject serviceResult = WebServiceUtil.requestWebService("http://172.19.127.63/index.php");
-
-        ArrayList<MyItem> foundItems = new ArrayList<MyItem>(20);
-
-        try {
-            JSONArray items = serviceResult.getJSONArray("items");
-
-            for (int i = 0; i < items.length(); i++) {
-                JSONObject obj = items.getJSONObject(i);
-                foundItems.add(
-                        //new ClipData.Item(obj.getInt("id"), obj.getString("name"),
-                        //                  obj.getBoolean("active")));
-            }
-
-        } catch (JSONException e) {
-            // handle exception
-        }
-
-        return foundItems;
-    }
-    */
-
-    //***********************************************************************************//
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +99,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 return false;
             }
         });
+
+        loggedin = false;
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -157,6 +130,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
     }
 
+    public String getUsr(){
+        return usr;
+    }
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -176,6 +153,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+        usr = email;
         boolean cancel = false;
         View focusView = null;
 
@@ -206,18 +184,17 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-
             mAuthTask.execute((Void) null);
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
+        //TODO: Replace this with your own logic but not in KoH
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
+        //TODO: Replace this with your own logic but not in KoH
         return password.length() > 4;
     }
 
@@ -361,15 +338,20 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // TODO: attempt authentication against a network service.
 
             // Simulate network access.
+            /**
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+             **/
 
             boolean status = false;
+
+
             ServerConnection con = new ServerConnection();
-            if(con.requestWebService(mEmail, mPassword) != null){
+            String query = "un=" + mEmail + "&" + "pwd=" + mPassword;
+            if(con.requestWebService(1, query) != null){
                 return true;
             }
 
@@ -393,6 +375,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             if (success) {
                 //TODO INSTANCE MAPS ACTIVITY.
+                loggedin = true;
+                startActivity(new Intent(LoginActivity.this, MapsActivity.class));
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -404,85 +388,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
-        }
-    }
-
-    public class ServerConnection {
-        /**
-         * required in order to prevent issues in earlier Android version.
-         */
-        private void disableConnectionReuseIfNecessary() {
-            // see HttpURLConnection API doc
-            if (Integer.parseInt(Build.VERSION.SDK)
-                    < Build.VERSION_CODES.FROYO) {
-                System.setProperty("http.keepAlive", "false");
-            }
-        }
-
-        private String getResponseText(InputStream inStream) {
-            // very nice trick from
-            // http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
-            return new Scanner(inStream).useDelimiter("\\A").next();
-        }
-
-        /*
-         * Request for RestFul Web Service
-         */
-        public JSONObject requestWebService(String Wemail, String Wpassword) {
-            disableConnectionReuseIfNecessary();
-            final String SERVER_ADDRESS = "http://172.19.127.63/index.php";
-            final int CONNECTION_TIMEOUT = 1000 * 15;
-            final int DATARETRIEVAL_TIMEOUT = 1000 * 15;
-
-            HttpURLConnection urlConnection = null;
-            try {
-                // create connection
-                URL urlToRequest = new URL(SERVER_ADDRESS);
-                urlConnection = (HttpURLConnection) urlToRequest.openConnection();
-                urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
-                urlConnection.setReadTimeout(DATARETRIEVAL_TIMEOUT);
-
-                urlConnection.setDoOutput(true);
-                urlConnection.setChunkedStreamingMode(0);
-
-                OutputStreamWriter d = new OutputStreamWriter(urlConnection.getOutputStream());
-                JSONObject cred = new JSONObject();
-                JSONObject auth=new JSONObject();
-                cred.put("username",Wemail);
-                cred.put("password", Wpassword);
-                auth.put("passwordCredentials", cred);
-
-                //F*CKING NEEDED LINE!!!!!!
-                d.write(auth.toString());
-
-                // handle issues
-                int statusCode = urlConnection.getResponseCode();
-                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                    // handle unauthorized (if service requires user login)
-                    // DO Nothing.
-                } else if (statusCode != HttpURLConnection.HTTP_OK) {
-                    // handle any other errors, like 404, 500,..
-                    return null;
-                }
-
-                // create JSON object from content
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                return new JSONObject(getResponseText(in));
-
-            } catch (MalformedURLException | SocketTimeoutException e) {
-                e.printStackTrace();
-                // URL is invalid
-            } catch (IOException | JSONException e) {
-                // could not read response body
-                // (could not create input stream)
-                e.printStackTrace();
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-            }
-
-            return null;
         }
     }
 }

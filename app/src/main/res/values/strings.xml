@@ -17,5 +17,6 @@
     <string name="title_activity_fight">Fight</string>
 
     <string name="title_activity_maps">Maps</string>
+    <string name="title_activity_being_attacked">attack</string>
 
 </resources>
